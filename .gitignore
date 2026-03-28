@@ -6,6 +6,7 @@
 .env.production.local
 .next
 .omx
+.worktrees
 node_modules
 dist
 coverage

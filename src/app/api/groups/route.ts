@@ -9,7 +9,7 @@ import { slugifyGroupName } from "@/lib/slug";
 
 const createGroupSchema = z.object({
   name: z.string().trim().min(2).max(50),
-  password: z.string().trim().min(4).max(100).optional().or(z.literal("")),
+  password: z.string().trim().min(4).max(100),
 });
 
 export async function POST(request: Request) {
@@ -27,9 +27,7 @@ export async function POST(request: Request) {
 
   try {
     const db = getDb();
-    const passwordHash = parsed.data.password
-      ? await hashGroupPassword(parsed.data.password)
-      : null;
+    const passwordHash = await hashGroupPassword(parsed.data.password);
 
     const [createdGroup] = await db
       .insert(groups)

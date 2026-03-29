@@ -24,6 +24,17 @@ function assertEvenParticipants(memberIds: string[]) {
   }
 }
 
+function validateParticipantCount(memberIds: string[]): ValidationResult {
+  if (memberIds.length < 2 || memberIds.length % 2 !== 0) {
+    return {
+      ok: false,
+      reasons: ["Two-team mode requires an even number of participants."],
+    };
+  }
+
+  return { ok: true };
+}
+
 export function validateConstraints(
   memberIds: string[],
   constraints: DraftConstraint[],
@@ -111,6 +122,143 @@ function isAssignmentValid(
 
     return memberATeam !== memberBTeam;
   });
+}
+
+export function validateTeamAssignment(
+  memberIds: string[],
+  constraints: DraftConstraint[],
+  assignments: Array<{ memberId: string; teamId: TeamId }>,
+): ValidationResult {
+  const participantCountValidation = validateParticipantCount(memberIds);
+
+  if (!participantCountValidation.ok) {
+    return participantCountValidation;
+  }
+
+  if (assignments.length !== memberIds.length) {
+    return {
+      ok: false,
+      reasons: ["Every selected participant must have exactly one team assignment."],
+    };
+  }
+
+  const seenMemberIds = new Set<string>();
+  const team1: string[] = [];
+  const team2: string[] = [];
+
+  for (const assignment of assignments) {
+    if (!memberIds.includes(assignment.memberId)) {
+      return {
+        ok: false,
+        reasons: [`Unknown member ${assignment.memberId} was assigned.`],
+      };
+    }
+
+    if (seenMemberIds.has(assignment.memberId)) {
+      return {
+        ok: false,
+        reasons: [`Member ${assignment.memberId} was assigned more than once.`],
+      };
+    }
+
+    seenMemberIds.add(assignment.memberId);
+
+    if (assignment.teamId === 1) {
+      team1.push(assignment.memberId);
+    } else {
+      team2.push(assignment.memberId);
+    }
+  }
+
+  if (team1.length !== team2.length) {
+    return {
+      ok: false,
+      reasons: ["Two-team mode requires both teams to have the same number of players."],
+    };
+  }
+
+  const constraintValidation = validateConstraints(memberIds, constraints);
+
+  if (!constraintValidation.ok) {
+    return constraintValidation;
+  }
+
+  return isAssignmentValid({ team1, team2 }, constraints)
+    ? { ok: true }
+    : {
+        ok: false,
+      reasons: ["The final team layout does not satisfy the active constraints."],
+      };
+}
+
+export function moveMemberToTeam(
+  memberIds: string[],
+  constraints: DraftConstraint[],
+  assignments: Array<{ memberId: string; teamId: TeamId }>,
+  memberId: string,
+  targetTeam: TeamId,
+):
+  | {
+      ok: true;
+      assignments: Array<{ memberId: string; teamId: TeamId }>;
+    }
+  | {
+      ok: false;
+      reasons: string[];
+    } {
+  const memberAssignment = assignments.find(
+    (assignment) => assignment.memberId === memberId,
+  );
+
+  if (!memberAssignment) {
+    return {
+      ok: false,
+      reasons: [`Unknown member ${memberId} was assigned.`],
+    };
+  }
+
+  if (memberAssignment.teamId === targetTeam) {
+    return { ok: true, assignments };
+  }
+
+  const swapCandidates = assignments.filter(
+    (assignment) => assignment.teamId === targetTeam,
+  );
+  let fallbackFailure: { ok: false; reasons: string[] } = {
+    ok: false,
+    reasons: ["The final team layout does not satisfy the active constraints."],
+  };
+
+  for (const candidate of swapCandidates) {
+    const nextAssignments = assignments.map((assignment) => {
+      if (assignment.memberId === memberId) {
+        return { ...assignment, teamId: targetTeam };
+      }
+
+      if (assignment.memberId === candidate.memberId) {
+        return { ...assignment, teamId: memberAssignment.teamId };
+      }
+
+      return assignment;
+    });
+
+    const validation = validateTeamAssignment(
+      memberIds,
+      constraints,
+      nextAssignments,
+    );
+
+    if (validation.ok) {
+      return {
+        ok: true,
+        assignments: nextAssignments,
+      };
+    }
+
+    fallbackFailure = validation;
+  }
+
+  return fallbackFailure;
 }
 
 function combinations<T>(items: T[], size: number): T[][] {

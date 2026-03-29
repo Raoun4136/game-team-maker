@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
+import { EditorNameGate } from "@/components/editor-name-gate";
 import { NavTabs } from "@/components/nav-tabs";
 import { getGroupBySlug } from "@/lib/queries/groups";
 
@@ -38,6 +39,7 @@ export default async function GroupLayout({
           <NavTabs slug={group.slug} />
         </div>
       </header>
+      <EditorNameGate />
       {children}
     </div>
   );

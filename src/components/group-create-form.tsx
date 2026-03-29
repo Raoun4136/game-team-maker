@@ -69,12 +69,14 @@ export function GroupCreateForm() {
         <input
           className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-base outline-none transition focus:border-slate-900"
           id="password"
+          minLength={4}
           name="password"
-          placeholder="민감한 수정 보호용"
+          placeholder="민감한 수정 보호용 4자 이상"
+          required
           type="password"
         />
         <p className="text-sm text-slate-500">
-          결과 수정, 게임 삭제, 멤버 비활성화 같은 민감 작업에만 사용됩니다.
+          그룹 생성 시 반드시 설정합니다. 결과 수정, 게임 삭제, 멤버 비활성화에 사용됩니다.
         </p>
       </div>
 

@@ -1,4 +1,10 @@
-import { listActiveMembers, listGroupAuditEvents } from "@/lib/queries/groups";
+import {
+  getGroupBySlug,
+  listActiveMembers,
+  listGroupAuditEvents,
+} from "@/lib/queries/groups";
+import { listPartiesByGroup } from "@/lib/queries/parties";
+import { getGroupStandings } from "@/lib/queries/standings";
 
 type GroupPageProps = {
   params: Promise<{
@@ -8,9 +14,12 @@ type GroupPageProps = {
 
 export default async function GroupPage({ params }: GroupPageProps) {
   const { slug } = await params;
-  const [members, auditEvents] = await Promise.all([
+  const group = await getGroupBySlug(slug);
+  const [members, auditEvents, parties, standings] = await Promise.all([
     listActiveMembers(slug),
     listGroupAuditEvents(slug),
+    listPartiesByGroup(slug),
+    group ? getGroupStandings(group.id) : Promise.resolve([]),
   ]);
 
   return (
@@ -30,17 +39,26 @@ export default async function GroupPage({ params }: GroupPageProps) {
         value="MVP"
         description="2팀 고정, 랜덤 + 제약 조건"
       />
-      <PlaceholderCard
-        title="Members"
-        description="다음 단계에서 멤버 생성/수정/비활성화와 그룹 비밀번호 보호를 붙입니다."
+      <PreviewCard
+        items={parties.slice(0, 4).map((party) => ({
+          title: party.name,
+          subtitle: party.status === "active" ? "진행 중" : "종료됨",
+        }))}
+        title="Latest Parties"
       />
-      <PlaceholderCard
-        title="Parties"
-        description="파티 생성, 참가자 풀 구성, 게임 히스토리와 파티 누적 전적 영역이 이어집니다."
+      <PreviewCard
+        items={standings.slice(0, 4).map((row) => ({
+          title: row.memberName,
+          subtitle: `${row.wins}W ${row.losses}L`,
+        }))}
+        title="Group Standings"
       />
-      <PlaceholderCard
-        title="Logs"
-        description="이미 DB에는 감사 로그가 쌓이기 시작했고, 전용 페이지에서 그룹 히스토리를 볼 수 있습니다."
+      <PreviewCard
+        items={auditEvents.slice(0, 4).map((event) => ({
+          title: event.eventType,
+          subtitle: event.changeSummary,
+        }))}
+        title="Recent Logs"
       />
     </section>
   );
@@ -64,11 +82,28 @@ function InfoCard(props: {
   );
 }
 
-function PlaceholderCard(props: { title: string; description: string }) {
+function PreviewCard(props: {
+  title: string;
+  items: Array<{ title: string; subtitle: string }>;
+}) {
   return (
     <article className="rounded-[24px] border border-line bg-surface p-5 shadow-[0_18px_40px_rgba(15,23,42,0.05)]">
       <h2 className="text-lg font-semibold text-slate-950">{props.title}</h2>
-      <p className="mt-2 text-sm leading-7 text-slate-600">{props.description}</p>
+      <div className="mt-3 grid gap-2">
+        {props.items.length === 0 ? (
+          <p className="text-sm text-slate-500">아직 데이터가 없습니다.</p>
+        ) : (
+          props.items.map((item) => (
+            <div
+              className="rounded-2xl border border-line bg-white/70 px-3 py-3"
+              key={`${item.title}-${item.subtitle}`}
+            >
+              <p className="text-sm font-medium text-slate-950">{item.title}</p>
+              <p className="mt-1 text-xs text-slate-500">{item.subtitle}</p>
+            </div>
+          ))
+        )}
+      </div>
     </article>
   );
 }

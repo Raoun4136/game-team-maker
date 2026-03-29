@@ -6,6 +6,7 @@ type NavTabsProps = {
 
 const tabs = [
   { href: "", label: "Overview" },
+  { href: "/parties", label: "Parties" },
   { href: "/members", label: "Members" },
   { href: "/logs", label: "Logs" },
 ];

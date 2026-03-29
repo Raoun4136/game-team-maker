@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getDb } from "@/lib/db";
 import { groups } from "@/lib/db/schema";
+import { logAuditEvent } from "@/lib/audit/log-event";
 import { hashGroupPassword } from "@/lib/security/password";
 import { slugifyGroupName } from "@/lib/slug";
 
@@ -42,6 +43,14 @@ export async function POST(request: Request) {
         name: groups.name,
         slug: groups.slug,
       });
+
+    await logAuditEvent({
+      groupId: createdGroup.id,
+      actorName: "System",
+      eventType: "group.created",
+      changeSummary: `Created group ${createdGroup.name}.`,
+      payloadJson: createdGroup,
+    });
 
     return NextResponse.json(createdGroup, { status: 201 });
   } catch (error) {

@@ -1,8 +1,17 @@
+import Link from "next/link";
 import { GroupCreateForm } from "@/components/group-create-form";
 
 export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-10 lg:px-10 lg:py-14">
+      <div className="flex justify-end">
+        <Link
+          className="rounded-full border border-line bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-950"
+          href="/admin/login"
+        >
+          Admin
+        </Link>
+      </div>
       <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div className="grid gap-6">
           <p className="w-fit rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-slate-600">
@@ -40,6 +49,12 @@ export default function Home() {
 
         <div className="grid gap-4">
           <GroupCreateForm />
+          <Link
+            className="w-fit text-sm font-medium text-slate-500 underline-offset-4 transition hover:text-slate-900 hover:underline"
+            href="/admin/login"
+          >
+            운영자 페이지로 이동
+          </Link>
           <div className="rounded-[28px] border border-line bg-slate-950 px-6 py-5 text-sm text-slate-200 shadow-[0_18px_55px_rgba(15,23,42,0.2)]">
             <p className="font-medium text-white">MVP에 이미 고정된 규칙</p>
             <ul className="mt-3 grid gap-2 text-slate-300">

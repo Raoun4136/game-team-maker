@@ -1,6 +1,9 @@
 import { MembersManager } from "@/components/members-manager";
 import { UnlockPanel } from "@/components/unlock-panel";
-import { listActiveMembers } from "@/lib/queries/groups";
+import {
+  listActiveMembers,
+  listArchivedMembers,
+} from "@/lib/queries/groups";
 
 type MembersPageProps = {
   params: Promise<{
@@ -10,7 +13,10 @@ type MembersPageProps = {
 
 export default async function MembersPage({ params }: MembersPageProps) {
   const { slug } = await params;
-  const members = await listActiveMembers(slug);
+  const [members, archivedMembers] = await Promise.all([
+    listActiveMembers(slug),
+    listArchivedMembers(slug),
+  ]);
 
   return (
     <div className="grid gap-4">
@@ -27,6 +33,12 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
         <div className="mt-6">
           <MembersManager
+            initialArchivedMembers={archivedMembers.map((member) => ({
+              id: member.id,
+              name: member.name,
+              nickname: member.nickname,
+              archivedAt: member.archivedAt?.toISOString() ?? null,
+            }))}
             initialMembers={members.map((member) => ({
               id: member.id,
               name: member.name,

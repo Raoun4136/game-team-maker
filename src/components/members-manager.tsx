@@ -15,14 +15,17 @@ type MemberRecord = {
 type MembersManagerProps = {
   slug: string;
   initialMembers: MemberRecord[];
+  initialArchivedMembers: Array<MemberRecord & { archivedAt: string | null }>;
 };
 
 export function MembersManager({
   slug,
   initialMembers,
+  initialArchivedMembers,
 }: MembersManagerProps) {
   const router = useRouter();
   const [members, setMembers] = useState(initialMembers);
+  const [archivedMembers, setArchivedMembers] = useState(initialArchivedMembers);
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -131,11 +134,53 @@ export function MembersManager({
           return;
         }
 
+        const updatedMember = data as MemberRecord & { archivedAt: string | null };
         setMembers((current) => current.filter((member) => member.id !== memberId));
+        setArchivedMembers((current) => [
+          {
+            ...updatedMember,
+            archivedAt: updatedMember.archivedAt ? String(updatedMember.archivedAt) : null,
+          },
+          ...current,
+        ]);
         setMessage(null);
         refresh();
       } catch (error) {
         setMessage(error instanceof Error ? error.message : "멤버 비활성화에 실패했습니다.");
+      }
+    });
+  }
+
+  function restoreMember(memberId: string) {
+    startTransition(async () => {
+      try {
+        const editorName = ensureEditorName();
+        const response = await fetch(`/api/groups/${slug}/members/${memberId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "x-editor-name": encodeEditorNameHeader(editorName),
+          },
+          body: JSON.stringify({ archived: false }),
+        });
+        const data = (await response.json().catch(() => null)) as
+          | (MemberRecord & { archivedAt?: string | null; error?: string })
+          | null;
+
+        if (!response.ok) {
+          setMessage(data?.error ?? "멤버 복구에 실패했습니다.");
+          return;
+        }
+
+        const restoredMember = data as MemberRecord;
+        setArchivedMembers((current) =>
+          current.filter((member) => member.id !== memberId),
+        );
+        setMembers((current) => [...current, restoredMember]);
+        setMessage("멤버를 다시 활성화했습니다.");
+        refresh();
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : "멤버 복구에 실패했습니다.");
       }
     });
   }
@@ -192,6 +237,46 @@ export function MembersManager({
           ))
         )}
       </div>
+
+      <details className="rounded-[24px] border border-line bg-white/80 p-5 shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
+        <summary className="cursor-pointer list-none text-lg font-semibold text-slate-950">
+          비활성 멤버 {archivedMembers.length}명
+        </summary>
+        <p className="mt-2 text-sm text-slate-500">
+          과거 기록은 유지한 채 새 게임 참가자 목록에서만 제외된 멤버입니다.
+        </p>
+        <div className="mt-4 grid gap-3">
+          {archivedMembers.length === 0 ? (
+            <div className="rounded-[20px] border border-dashed border-line bg-surface px-4 py-5 text-sm text-slate-500">
+              아직 비활성 멤버가 없습니다.
+            </div>
+          ) : (
+            archivedMembers.map((member) => (
+              <article
+                className="grid gap-3 rounded-[20px] border border-line bg-surface p-4 md:grid-cols-[1fr_auto] md:items-center"
+                key={member.id}
+              >
+                <div className="grid gap-1">
+                  <p className="font-medium text-slate-950">
+                    {member.name}
+                    <span className="ml-2 text-slate-500">{member.nickname}</span>
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    비활성화 {member.archivedAt ? new Date(member.archivedAt).toLocaleString("ko-KR") : "-"}
+                  </p>
+                </div>
+                <button
+                  className="h-11 rounded-2xl border border-line px-4 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-950"
+                  onClick={() => restoreMember(member.id)}
+                  type="button"
+                >
+                  다시 활성화
+                </button>
+              </article>
+            ))
+          )}
+        </div>
+      </details>
     </section>
   );
 }

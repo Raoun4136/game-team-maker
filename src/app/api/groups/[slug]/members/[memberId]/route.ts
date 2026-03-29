@@ -75,10 +75,16 @@ export async function PATCH(
     groupId: group.id,
     memberId: updatedMember.id,
     actorName: editorName,
-    eventType: parsed.data.archived ? "member.archived" : "member.updated",
+    eventType: parsed.data.archived
+      ? "member.archived"
+      : parsed.data.archived === false && existingMember.archivedAt
+        ? "member.restored"
+        : "member.updated",
     changeSummary: parsed.data.archived
       ? `Archived member ${updatedMember.name}.`
-      : `Updated member ${updatedMember.name}.`,
+      : parsed.data.archived === false && existingMember.archivedAt
+        ? `Restored member ${updatedMember.name}.`
+        : `Updated member ${updatedMember.name}.`,
     payloadJson: updatedMember,
   });
 

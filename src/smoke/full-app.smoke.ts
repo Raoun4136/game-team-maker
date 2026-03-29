@@ -253,7 +253,7 @@ describe.sequential("full application smoke flow", () => {
 
       const partiesResponse = await plainClient.request(`/g/${encodedSlug}/parties`);
       expect(partiesResponse.status).toBe(200);
-      expect(await partiesResponse.text()).toContain("파티 목록");
+      expect(await partiesResponse.text()).toContain("지금 운영 중인 세션");
 
       const logsResponse = await plainClient.request(`/g/${encodedSlug}/logs`);
       expect(logsResponse.status).toBe(200);

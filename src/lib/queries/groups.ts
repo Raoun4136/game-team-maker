@@ -1,4 +1,5 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
+import { isNotNull } from "drizzle-orm";
 
 import { getDb } from "@/lib/db";
 import { normalizeGroupSlug } from "@/lib/group-slug";
@@ -63,4 +64,26 @@ export async function listActiveMembers(slug: string) {
     .from(members)
     .where(and(eq(members.groupId, group.id), isNull(members.archivedAt)))
     .orderBy(members.createdAt);
+}
+
+export async function listArchivedMembers(slug: string) {
+  const group = await getGroupBySlug(slug);
+
+  if (!group) {
+    return [];
+  }
+
+  const db = getDb();
+
+  return db
+    .select({
+      id: members.id,
+      name: members.name,
+      nickname: members.nickname,
+      archivedAt: members.archivedAt,
+      createdAt: members.createdAt,
+    })
+    .from(members)
+    .where(and(eq(members.groupId, group.id), isNotNull(members.archivedAt)))
+    .orderBy(desc(members.archivedAt));
 }

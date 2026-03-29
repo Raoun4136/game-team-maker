@@ -4,9 +4,10 @@ import { FormEvent, useState, useTransition } from "react";
 
 type UnlockPanelProps = {
   slug: string;
+  onUnlocked?: (expiresAt: string) => void;
 };
 
-export function UnlockPanel({ slug }: UnlockPanelProps) {
+export function UnlockPanel({ slug, onUnlocked }: UnlockPanelProps) {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -35,6 +36,7 @@ export function UnlockPanel({ slug }: UnlockPanelProps) {
       const formatted = new Date(data.expiresAt).toLocaleTimeString("ko-KR");
       setMessage(`민감한 수정이 ${formatted}까지 잠금 해제되었습니다.`);
       setPassword("");
+      onUnlocked?.(data.expiresAt);
     });
   }
 

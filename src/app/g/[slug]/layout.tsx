@@ -3,7 +3,8 @@ import { ReactNode } from "react";
 
 import { EditorNameGate } from "@/components/editor-name-gate";
 import { NavTabs } from "@/components/nav-tabs";
-import { getGroupBySlug } from "@/lib/queries/groups";
+import { getGroupBySlug, listArchivedMembers } from "@/lib/queries/groups";
+import { listPartiesByGroup } from "@/lib/queries/parties";
 
 type GroupLayoutProps = {
   children: ReactNode;
@@ -18,6 +19,10 @@ export default async function GroupLayout({
 }: GroupLayoutProps) {
   const { slug } = await params;
   const group = await getGroupBySlug(slug);
+  const [parties, archivedMembers] = await Promise.all([
+    listPartiesByGroup(slug),
+    listArchivedMembers(slug),
+  ]);
 
   if (!group) {
     notFound();
@@ -36,7 +41,11 @@ export default async function GroupLayout({
             </h1>
             <p className="text-sm text-slate-500">slug: {group.slug}</p>
           </div>
-          <NavTabs slug={group.slug} />
+          <NavTabs
+            activeParties={parties.filter((party) => party.status === "active").length}
+            archivedMembers={archivedMembers.length}
+            slug={group.slug}
+          />
         </div>
       </header>
       <EditorNameGate />

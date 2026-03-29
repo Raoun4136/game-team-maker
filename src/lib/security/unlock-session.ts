@@ -50,3 +50,19 @@ export function isValidUnlockToken(input: UnlockValidationInput) {
     Buffer.from(expectedSignature, "utf8"),
   );
 }
+
+export function readUnlockTokenExpiresAt(token: string, groupSlug: string) {
+  const [tokenSlug, expiresAtIso] = token.split("|");
+
+  if (!tokenSlug || !expiresAtIso || tokenSlug !== groupSlug) {
+    return null;
+  }
+
+  const expiresAt = new Date(expiresAtIso);
+
+  if (Number.isNaN(expiresAt.getTime())) {
+    return null;
+  }
+
+  return expiresAt;
+}

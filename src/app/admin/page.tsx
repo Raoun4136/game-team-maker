@@ -1,5 +1,9 @@
 import { AdminDashboard } from "@/components/admin-dashboard";
 import {
+  toIsoDateString,
+  toOptionalIsoDateString,
+} from "@/features/admin/serialization";
+import {
   getAdminSummary,
   listAdminGroups,
   listRecentAdminAuditEvents,
@@ -21,17 +25,17 @@ export default async function AdminPage() {
     <AdminDashboard
       groups={groups.map((group) => ({
         ...group,
-        createdAt: group.createdAt.toISOString(),
-        lastEventAt: group.lastEventAt ? group.lastEventAt.toISOString() : null,
+        createdAt: toIsoDateString(group.createdAt),
+        lastEventAt: toOptionalIsoDateString(group.lastEventAt),
       }))}
       recentEvents={recentEvents.map((event) => ({
         ...event,
-        createdAt: event.createdAt.toISOString(),
+        createdAt: toIsoDateString(event.createdAt),
       }))}
       recentParties={recentParties.map((party) => ({
         ...party,
-        startedAt: party.startedAt.toISOString(),
-        endedAt: party.endedAt ? party.endedAt.toISOString() : null,
+        startedAt: toIsoDateString(party.startedAt),
+        endedAt: toOptionalIsoDateString(party.endedAt),
       }))}
       summary={summary}
     />

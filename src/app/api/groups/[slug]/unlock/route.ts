@@ -42,7 +42,7 @@ export async function POST(
 
   const expiresAt = buildUnlockExpiresAt(getSensitiveUnlockMinutes());
   const token = createUnlockToken({
-    groupSlug: slug,
+    groupSlug: group.slug,
     expiresAt,
     secret: getUnlockSecretForTests(),
   });
@@ -53,7 +53,7 @@ export async function POST(
   });
 
   response.cookies.set({
-    name: getUnlockCookieName(slug),
+    name: getUnlockCookieName(group.slug),
     value: token,
     expires: expiresAt,
     httpOnly: true,

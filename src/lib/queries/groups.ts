@@ -1,10 +1,12 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 
 import { getDb } from "@/lib/db";
+import { normalizeGroupSlug } from "@/lib/group-slug";
 import { auditEvents, groups, members } from "@/lib/db/schema";
 
 export async function getGroupBySlug(slug: string) {
   const db = getDb();
+  const normalizedSlug = normalizeGroupSlug(slug);
 
   const [group] = await db
     .select({
@@ -14,7 +16,7 @@ export async function getGroupBySlug(slug: string) {
       createdAt: groups.createdAt,
     })
     .from(groups)
-    .where(eq(groups.slug, slug))
+    .where(eq(groups.slug, normalizedSlug))
     .limit(1);
 
   return group ?? null;

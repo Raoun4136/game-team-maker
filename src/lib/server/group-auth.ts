@@ -1,10 +1,11 @@
 import { cookies } from "next/headers";
 
 import { appEnv, getDatabaseUrl } from "@/lib/env";
+import { normalizeGroupSlug } from "@/lib/group-slug";
 import { isValidUnlockToken } from "@/lib/security/unlock-session";
 
 export function getUnlockCookieName(groupSlug: string) {
-  return `gtm-unlock-${groupSlug}`;
+  return `gtm-unlock-${normalizeGroupSlug(groupSlug)}`;
 }
 
 function getUnlockSecret() {
@@ -17,7 +18,8 @@ export function hasSensitiveUnlock(
     | Awaited<ReturnType<typeof cookies>>
     | { get(name: string): { value: string } | undefined },
 ) {
-  const token = cookieStore.get(getUnlockCookieName(groupSlug))?.value;
+  const normalizedSlug = normalizeGroupSlug(groupSlug);
+  const token = cookieStore.get(getUnlockCookieName(normalizedSlug))?.value;
 
   if (!token) {
     return false;
@@ -25,7 +27,7 @@ export function hasSensitiveUnlock(
 
   return isValidUnlockToken({
     token,
-    groupSlug,
+    groupSlug: normalizedSlug,
     secret: getUnlockSecret(),
   });
 }

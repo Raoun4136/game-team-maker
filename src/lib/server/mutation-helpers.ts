@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 
 import { getDb } from "@/lib/db";
 import { groups, parties } from "@/lib/db/schema";
+import { normalizeGroupSlug } from "@/lib/group-slug";
 
 export function getEditorName(request: Request) {
   const editorName = request.headers.get("x-editor-name")?.trim();
@@ -15,11 +16,12 @@ export function getEditorName(request: Request) {
 
 export async function requireGroupBySlug(slug: string) {
   const db = getDb();
+  const normalizedSlug = normalizeGroupSlug(slug);
 
   const [group] = await db
     .select()
     .from(groups)
-    .where(eq(groups.slug, slug))
+    .where(eq(groups.slug, normalizedSlug))
     .limit(1);
 
   if (!group) {

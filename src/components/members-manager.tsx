@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
 
 import { ensureEditorName } from "@/lib/client/editor-name";
+import { encodeEditorNameHeader } from "@/lib/editor-name-header";
 
 type MemberRecord = {
   id: string;
@@ -41,7 +42,7 @@ export function MembersManager({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-editor-name": editorName,
+            "x-editor-name": encodeEditorNameHeader(editorName),
           },
           body: JSON.stringify({ name, nickname }),
         });
@@ -77,7 +78,7 @@ export function MembersManager({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            "x-editor-name": editorName,
+            "x-editor-name": encodeEditorNameHeader(editorName),
           },
           body: JSON.stringify({
             name: nextName,
@@ -117,7 +118,7 @@ export function MembersManager({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            "x-editor-name": editorName,
+            "x-editor-name": encodeEditorNameHeader(editorName),
           },
           body: JSON.stringify({ archived: true }),
         });

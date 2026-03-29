@@ -6,11 +6,14 @@ import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { encodeEditorNameHeader } from "@/lib/editor-name-header";
+
 const TEST_TIMEOUT_MS = 120_000;
 const GROUP_PASSWORD = "1234";
 const ADMIN_USERNAME = "smoke-admin";
 const ADMIN_PASSWORD = "smoke-secret";
-const EDITOR_NAME = "Smoke Tester";
+const EDITOR_NAME = "홍길동";
+const ENCODED_EDITOR_NAME = encodeEditorNameHeader(EDITOR_NAME);
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -283,7 +286,7 @@ describe.sequential("full application smoke flow", () => {
             method: "POST",
             headers: {
               "content-type": "application/json",
-              "x-editor-name": EDITOR_NAME,
+              "x-editor-name": ENCODED_EDITOR_NAME,
             },
             body: JSON.stringify(seed),
           },
@@ -302,7 +305,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ nickname: "AlphaPrime" }),
         },
@@ -320,7 +323,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ archived: true }),
         },
@@ -360,7 +363,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ archived: true }),
         },
@@ -374,6 +377,7 @@ describe.sequential("full application smoke flow", () => {
       expect(logsPage.status).toBe(200);
       expect(logsHtml).toContain("member.created");
       expect(logsHtml).toContain("member.archived");
+      expect(logsHtml).toContain(EDITOR_NAME);
     },
     TEST_TIMEOUT_MS,
   );
@@ -391,7 +395,7 @@ describe.sequential("full application smoke flow", () => {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ name: `금요일 내전 ${smokePrefix}` }),
         },
@@ -406,7 +410,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ name: `랭크전 ${smokePrefix}` }),
         },
@@ -422,7 +426,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PUT",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({
             memberIds: activeMembers.map((member) => member.id),
@@ -469,7 +473,7 @@ describe.sequential("full application smoke flow", () => {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify(createGamePayload),
         },
@@ -490,7 +494,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({
             ...createGamePayload,
@@ -513,7 +517,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({
             ...createGamePayload,
@@ -530,7 +534,7 @@ describe.sequential("full application smoke flow", () => {
         {
           method: "DELETE",
           headers: {
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
         },
       );
@@ -543,7 +547,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({
             ...createGamePayload,
@@ -560,7 +564,7 @@ describe.sequential("full application smoke flow", () => {
         {
           method: "DELETE",
           headers: {
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
         },
       );
@@ -573,7 +577,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({ status: "ended" }),
         },
@@ -587,7 +591,7 @@ describe.sequential("full application smoke flow", () => {
           method: "PUT",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify({
             memberIds: [...activeMembers.map((member) => member.id), archivedMember.id],
@@ -603,7 +607,7 @@ describe.sequential("full application smoke flow", () => {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "x-editor-name": EDITOR_NAME,
+            "x-editor-name": ENCODED_EDITOR_NAME,
           },
           body: JSON.stringify(createGamePayload),
         },
@@ -627,6 +631,7 @@ describe.sequential("full application smoke flow", () => {
       expect(logsHtml).toContain("game.result.recorded");
       expect(logsHtml).toContain("game.deleted");
       expect(logsHtml).toContain("party.ended");
+      expect(logsHtml).toContain(EDITOR_NAME);
     },
     TEST_TIMEOUT_MS,
   );
@@ -677,6 +682,7 @@ describe.sequential("full application smoke flow", () => {
       expect(adminPageResponse.status).toBe(200);
       expect(adminHtml).toContain("전체 운영 현황");
       expect(adminHtml).toContain(group.name);
+      expect(adminHtml).toContain(EDITOR_NAME);
 
       const logoutResponse = await adminClient.request("/api/admin/logout", {
         method: "POST",

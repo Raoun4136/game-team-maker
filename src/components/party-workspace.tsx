@@ -10,6 +10,7 @@ import {
   validateTeamAssignment,
 } from "@/features/games/domain/generator";
 import { ensureEditorName } from "@/lib/client/editor-name";
+import { encodeEditorNameHeader } from "@/lib/editor-name-header";
 import { UnlockPanel } from "@/components/unlock-panel";
 
 type MemberOption = {
@@ -229,7 +230,7 @@ export function PartyWorkspace(props: PartyWorkspaceProps) {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              "x-editor-name": editorName,
+              "x-editor-name": encodeEditorNameHeader(editorName),
             },
             body: JSON.stringify({ memberIds: partyMemberIds }),
           },
@@ -262,7 +263,7 @@ export function PartyWorkspace(props: PartyWorkspaceProps) {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
-              "x-editor-name": editorName,
+              "x-editor-name": encodeEditorNameHeader(editorName),
             },
             body: JSON.stringify({ status: "ended" }),
           },
@@ -690,7 +691,7 @@ function GameEditor(props: {
             method: props.mode === "create" ? "POST" : "PATCH",
             headers: {
               "Content-Type": "application/json",
-              "x-editor-name": editorName,
+              "x-editor-name": encodeEditorNameHeader(editorName),
             },
             body: JSON.stringify({
               name,
@@ -736,7 +737,7 @@ function GameEditor(props: {
           {
             method: "DELETE",
             headers: {
-              "x-editor-name": editorName,
+              "x-editor-name": encodeEditorNameHeader(editorName),
             },
           },
         );

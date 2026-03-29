@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
 
 import { ensureEditorName } from "@/lib/client/editor-name";
+import { encodeEditorNameHeader } from "@/lib/editor-name-header";
 
 type PartySummary = {
   id: string;
@@ -44,7 +45,7 @@ export function PartiesManager({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-editor-name": editorName,
+            "x-editor-name": encodeEditorNameHeader(editorName),
           },
           body: JSON.stringify({ name }),
         });
@@ -87,7 +88,7 @@ export function PartiesManager({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            "x-editor-name": editorName,
+            "x-editor-name": encodeEditorNameHeader(editorName),
           },
           body: JSON.stringify({ status: "ended" }),
         });

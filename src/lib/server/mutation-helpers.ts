@@ -2,10 +2,14 @@ import { and, eq } from "drizzle-orm";
 
 import { getDb } from "@/lib/db";
 import { groups, parties } from "@/lib/db/schema";
+import { decodeEditorNameHeader } from "@/lib/editor-name-header";
 import { normalizeGroupSlug } from "@/lib/group-slug";
 
 export function getEditorName(request: Request) {
-  const editorName = request.headers.get("x-editor-name")?.trim();
+  const encodedEditorName = request.headers.get("x-editor-name");
+  const editorName = encodedEditorName
+    ? decodeEditorNameHeader(encodedEditorName)
+    : "";
 
   if (!editorName) {
     throw new Error("An editor name is required before making changes.");

@@ -5,7 +5,7 @@ import { normalizeGroupSlug } from "@/lib/group-slug";
 import { isValidUnlockToken } from "@/lib/security/unlock-session";
 
 export function getUnlockCookieName(groupSlug: string) {
-  return `gtm-unlock-${normalizeGroupSlug(groupSlug)}`;
+  return `gtm-unlock-${encodeURIComponent(normalizeGroupSlug(groupSlug))}`;
 }
 
 function getUnlockSecret() {

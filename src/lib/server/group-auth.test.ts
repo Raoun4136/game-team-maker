@@ -15,6 +15,14 @@ describe("group unlock auth", () => {
     );
   });
 
+  it("returns an ASCII-safe cookie name for Korean slugs", async () => {
+    const { getUnlockCookieName } = await import("./group-auth");
+
+    expect(getUnlockCookieName("테스트-921e7359")).toBe(
+      "gtm-unlock-%ED%85%8C%EC%8A%A4%ED%8A%B8-921e7359",
+    );
+  });
+
   it("accepts unlock cookies for encoded group route params", async () => {
     const { getUnlockCookieName, getUnlockSecretForTests, hasSensitiveUnlock } =
       await import("./group-auth");

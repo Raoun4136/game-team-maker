@@ -12,7 +12,7 @@ import {
 } from "@/lib/db/schema";
 import { getGroupBySlug } from "@/lib/queries/groups";
 
-type PartyGameRecord = {
+export type PartyGameRecord = {
   id: string;
   name: string;
   team1Name: string;
@@ -201,4 +201,9 @@ export async function listPartyGames(partyId: string): Promise<PartyGameRecord[]
         })),
     ),
   }));
+}
+
+export async function getPartyGameById(partyId: string, gameId: string) {
+  const games = await listPartyGames(partyId);
+  return games.find((game) => game.id === gameId) ?? null;
 }

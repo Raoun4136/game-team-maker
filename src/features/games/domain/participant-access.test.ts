@@ -63,7 +63,7 @@ describe("validateRequestedPartyPoolParticipants", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Games can only include members from the party participant pool.",
+      error: "Games can only include members saved in the party.",
     });
   });
 });

@@ -51,7 +51,7 @@ export function validateRequestedPartyPoolParticipants(input: {
   return validateRequestedIdsAgainstAllowedSet({
     requestedParticipantIds: input.requestedParticipantIds,
     allowedMemberIds: input.partyMemberIds,
-    error: "Games can only include members from the party participant pool.",
+    error: "Games can only include members saved in the party.",
     existingGameParticipantIds: input.existingGameParticipantIds,
   });
 }

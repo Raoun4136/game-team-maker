@@ -249,11 +249,11 @@ describe.sequential("full application smoke flow", () => {
 
       const membersResponse = await plainClient.request(`/g/${encodedSlug}/members`);
       expect(membersResponse.status).toBe(200);
-      expect(await membersResponse.text()).toContain("현재 멤버 로스터");
+      expect(await membersResponse.text()).toContain("멤버 관리");
 
       const partiesResponse = await plainClient.request(`/g/${encodedSlug}/parties`);
       expect(partiesResponse.status).toBe(200);
-      expect(await partiesResponse.text()).toContain("지금 운영 중인 세션");
+      expect(await partiesResponse.text()).toContain("지금 운영 중인 파티");
 
       const logsResponse = await plainClient.request(`/g/${encodedSlug}/logs`);
       expect(logsResponse.status).toBe(200);
@@ -383,7 +383,7 @@ describe.sequential("full application smoke flow", () => {
   );
 
   it(
-    "covers party, participant pool, game result, protected edits, and ended party rules",
+    "covers party, members, game result, protected edits, and ended party rules",
     async () => {
       if (!group || !archivedMember) {
         throw new Error("Smoke members were not initialized.");
@@ -487,6 +487,18 @@ describe.sequential("full application smoke flow", () => {
       );
       expect(partyPage.status).toBe(200);
       expect(await partyPage.text()).toContain(createGamePayload.name);
+
+      const newGamePage = await plainClient.request(
+        `/g/${encodedSlug}/parties/${party.id}/games/new`,
+      );
+      expect(newGamePage.status).toBe(200);
+      expect(await newGamePage.text()).toContain("새 게임 만들기");
+
+      const gameDetailPage = await plainClient.request(
+        `/g/${encodedSlug}/parties/${party.id}/games/${game.id}`,
+      );
+      expect(gameDetailPage.status).toBe(200);
+      expect(await gameDetailPage.text()).toContain(createGamePayload.name);
 
       const recordResultResponse = await plainClient.request(
         `/api/groups/${encodedSlug}/parties/${party.id}/games/${game.id}`,

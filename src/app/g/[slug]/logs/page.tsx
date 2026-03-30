@@ -14,10 +14,10 @@ export default async function LogsPage({ params }: LogsPageProps) {
     <section className="rounded-[32px] border border-line bg-white/80 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
       <div className="grid gap-2">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-          Logs
+          기록
         </p>
         <h2 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-          그룹 히스토리
+          기록
         </h2>
       </div>
 
@@ -25,10 +25,10 @@ export default async function LogsPage({ params }: LogsPageProps) {
         <table className="w-full border-collapse text-left text-sm">
           <thead className="bg-slate-50 text-slate-500">
             <tr>
-              <th className="px-4 py-3 font-medium">When</th>
-              <th className="px-4 py-3 font-medium">Actor</th>
-              <th className="px-4 py-3 font-medium">Event</th>
-              <th className="px-4 py-3 font-medium">Summary</th>
+              <th className="px-4 py-3 font-medium">시간</th>
+              <th className="px-4 py-3 font-medium">수정자</th>
+              <th className="px-4 py-3 font-medium">이벤트</th>
+              <th className="px-4 py-3 font-medium">요약</th>
             </tr>
           </thead>
           <tbody>

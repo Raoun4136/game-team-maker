@@ -30,7 +30,7 @@ export async function PUT(
 
   if (party.status !== "active") {
     return NextResponse.json(
-      { error: "Ended parties can no longer change their participant pool." },
+      { error: "Ended parties can no longer change their members." },
       { status: 409 },
     );
   }
@@ -76,7 +76,7 @@ export async function PUT(
     partyId: party.id,
     actorName: editorName,
     eventType: "party.members.synced",
-    changeSummary: `Updated the participant pool for ${party.name}.`,
+    changeSummary: `Updated the members for ${party.name}.`,
     payloadJson: {
       memberIds: parsed.data.memberIds,
     },

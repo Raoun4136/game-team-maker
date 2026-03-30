@@ -10,17 +10,17 @@ type NavTabsProps = {
 };
 
 const tabs = [
-  { href: "", label: "Overview", description: "지금 해야 할 일" },
-  { href: "/parties", label: "Parties", description: "세션 운영" },
-  { href: "/members", label: "Members", description: "로스터 관리" },
-  { href: "/logs", label: "Logs", description: "변경 기록" },
+  { href: "", label: "그룹", description: "요약과 최근 기록" },
+  { href: "/parties", label: "파티", description: "파티 생성과 선택" },
+  { href: "/members", label: "멤버", description: "멤버 관리" },
+  { href: "/logs", label: "기록", description: "변경 기록" },
 ];
 
 export function NavTabs({ slug, activeParties, archivedMembers }: NavTabsProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap gap-3" aria-label="Group sections">
+    <nav className="flex flex-wrap gap-3" aria-label="그룹 화면 이동">
       {tabs.map((tab) => (
         <NavTab
           active={
@@ -31,11 +31,11 @@ export function NavTabs({ slug, activeParties, archivedMembers }: NavTabsProps) 
           badge={
             tab.href === "/parties"
               ? activeParties > 0
-                ? `${activeParties} active`
+                ? `${activeParties} 진행 중`
                 : null
               : tab.href === "/members"
                 ? archivedMembers > 0
-                  ? `${archivedMembers} archived`
+                  ? `${archivedMembers} 비활성`
                   : null
                 : null
           }

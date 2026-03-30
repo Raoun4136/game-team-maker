@@ -140,14 +140,13 @@ export function PartiesManager({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="grid gap-2">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-              Parties
+              파티
             </p>
             <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950">
-              지금 운영 중인 세션
+              지금 운영 중인 파티
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-slate-600">
-              진행 중인 파티를 가장 먼저 열고, 없으면 새 파티를 만들어 멤버 풀과 게임을
-              이어갑니다.
+              진행 중인 파티를 먼저 열고, 없으면 새 파티를 만들어 운영을 시작합니다.
             </p>
           </div>
           {latestParty ? (
@@ -163,8 +162,7 @@ export function PartiesManager({
         <div className="mt-6 grid gap-4">
           {activeParties.length === 0 ? (
             <article className="rounded-[28px] border border-dashed border-line bg-surface px-5 py-6 text-sm text-slate-500">
-              현재 진행 중인 파티가 없습니다. 아래에서 새 파티를 만들면 바로 워크스페이스를
-              시작할 수 있습니다.
+              현재 진행 중인 파티가 없습니다. 아래에서 새 파티를 만들면 바로 파티 화면으로 들어갈 수 있습니다.
             </article>
           ) : (
             activeParties.map((party) => (
@@ -187,13 +185,13 @@ export function PartiesManager({
         >
           <div className="grid gap-2">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-              Create
+              새 파티
             </p>
             <h3 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
               새 파티 만들기
             </h3>
             <p className="text-sm leading-7 text-slate-600">
-              새 세션을 열면 참가자 풀과 게임 히스토리를 그 파티 안에서 관리합니다.
+              새 파티를 열면 그 안에서 멤버와 게임 기록을 관리합니다.
             </p>
           </div>
           <input
@@ -219,7 +217,7 @@ export function PartiesManager({
         <section className="rounded-[32px] border border-line bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="grid gap-2">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-              History
+              지난 파티
             </p>
             <h3 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
               종료된 파티
@@ -271,7 +269,7 @@ function PartyCard(props: {
         </p>
         <p className="text-sm text-slate-600">
           {props.mode === "active"
-            ? "이 파티에서 참가자 풀을 조정하고 바로 다음 게임을 만들 수 있습니다."
+            ? "이 파티의 멤버를 조정하고 바로 새 게임을 만들 수 있습니다."
             : "기록을 검토하거나 과거 게임을 다시 열어볼 수 있습니다."}
         </p>
       </div>
@@ -280,7 +278,7 @@ function PartyCard(props: {
           className="rounded-2xl border border-line px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-950"
           href={`/g/${props.slug}/parties/${props.party.id}`}
         >
-          워크스페이스 열기
+          파티 열기
         </Link>
         {props.party.status === "active" && props.onEnd ? (
           <button
